@@ -16,7 +16,7 @@ TOOLCHAIN_CMAKE_PATH=$HOME/esp/esp-idf/tools/cmake/toolchain-esp32.cmake
 LIB_INSTALL_PATH=$SCRIPTDIR/../lib
 
 # list of modules to compile
-OPENCV_MODULES_LIST=core,imgproc,imgcodecs
+OPENCV_MODULES_LIST=core,imgproc
 
 echo "################################################################################"
 echo "######################## build_opencv_for_esp32 script #########################"
@@ -39,12 +39,69 @@ else
      echo "Will be installed in user-defined library install path: ${LIB_INSTALL_PATH}/opencv"
 fi
 
+# get source directory from third argument or use default
+if [ -z "$3" ]; then
+    OPENCV_SOURCE_DIR=$(realpath "$SCRIPTDIR/../../")
+    echo "Using default OpenCV source dir: $OPENCV_SOURCE_DIR"
+else
+    OPENCV_SOURCE_DIR=$(realpath "$3")
+    echo "Using user-defined OpenCV source dir: $OPENCV_SOURCE_DIR"
+fi
 
-CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DESP32=ON -DBUILD_SHARED_LIBS=OFF -DCV_DISABLE_OPTIMIZATION=OFF -DWITH_IPP=OFF -DWITH_TBB=OFF -DWITH_OPENMP=OFF -DWITH_PTHREADS_PF=OFF -DWITH_QUIRC=OFF -DWITH_1394=OFF -DWITH_CUDA=OFF -DWITH_OPENCL=OFF -DWITH_OPENCLAMDFFT=OFF -DWITH_OPENCLAMDBLAS=OFF -DWITH_VA_INTEL=OFF -DWITH_EIGEN=OFF -DWITH_GSTREAMER=OFF -DWITH_GTK=OFF -DWITH_JASPER=OFF -DWITH_JPEG=OFF -DWITH_WEBP=OFF -DBUILD_ZLIB=ON -DBUILD_PNG=ON -DWITH_TIFF=OFF -DWITH_V4L=OFF -DWITH_LAPACK=OFF -DWITH_ITT=OFF -DWITH_PROTOBUF=OFF -DWITH_IMGCODEC_HDR=OFF -DWITH_IMGCODEC_SUNRASTER=OFF -DWITH_IMGCODEC_PXM=OFF -DWITH_IMGCODEC_PFM=OFF -DBUILD_LIST=${OPENCV_MODULES_LIST} -DBUILD_JAVA=OFF -DBUILD_opencv_python=OFF -DBUILD_opencv_java=OFF -DBUILD_opencv_apps=OFF -DBUILD_PACKAGE=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DCV_ENABLE_INTRINSICS=OFF -DCV_TRACE=OFF -DOPENCV_ENABLE_MEMALIGN=OFF -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_CMAKE_PATH}"
+
+
+CMAKE_ARGS="\
+-DCMAKE_BUILD_TYPE=Release\
+-DESP32=ON \
+-DWITH_ADE=OFF \
+-DBUILD_opencv_ml=OFF\
+-DBUILD_opencv_gapi=OFF\
+-DBUILD_SHARED_LIBS=OFF\
+-DCV_DISABLE_OPTIMIZATION=OFF\
+-DWITH_IPP=OFF\
+-DWITH_TBB=OFF\
+-DWITH_OPENMP=OFF\
+-DWITH_PTHREADS_PF=OFF\
+-DWITH_QUIRC=OFF\
+-DWITH_1394=OFF\
+-DWITH_CUDA=OFF\
+-DWITH_OPENCL=OFF\
+-DWITH_OPENCLAMDFFT=OFF\
+-DWITH_OPENCLAMDBLAS=OFF\
+-DWITH_VA_INTEL=OFF\
+-DWITH_EIGEN=OFF\
+-DWITH_GSTREAMER=OFF\
+-DWITH_GTK=OFF\
+-DWITH_JASPER=OFF\
+-DWITH_JPEG=OFF\
+-DWITH_WEBP=OFF\
+-DBUILD_ZLIB=ON\
+-DBUILD_PNG=ON\
+-DWITH_TIFF=OFF\
+-DWITH_V4L=OFF\
+-DWITH_LAPACK=OFF\
+-DWITH_ITT=OFF\
+-DWITH_PROTOBUF=OFF\
+-DWITH_IMGCODEC_HDR=OFF\
+-DWITH_IMGCODEC_SUNRASTER=OFF\
+-DWITH_IMGCODEC_PXM=OFF\
+-DWITH_IMGCODEC_PFM=OFF\
+-DBUILD_LIST=${OPENCV_MODULES_LIST}\
+-DBUILD_JAVA=OFF\
+-DBUILD_opencv_python=OFF\
+-DBUILD_opencv_java=OFF\
+-DBUILD_opencv_apps=OFF\
+-DBUILD_PACKAGE=OFF\
+-DBUILD_PERF_TESTS=OFF\
+-DBUILD_TESTS=OFF\
+-DCV_ENABLE_INTRINSICS=OFF\
+-DCV_TRACE=OFF\
+-DOPENCV_ENABLE_MEMALIGN=OFF\
+-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_CMAKE_PATH}"
 
 
 ### configure and build opencv ###
-cd $SCRIPTDIR/../../
+cd "$OPENCV_SOURCE_DIR"
 rm -rf build/ && mkdir -p build/ && cd build
 
 # configure with cmake
@@ -61,13 +118,13 @@ if [ "${prompt}" != "y" ] && [ "${prompt}" != "Y" ] && [ "${prompt}" != "yes" ];
 fi
 
 # fix of the generated file alloc.c 
-cp $SCRIPTDIR/resources/alloc_fix.cpp ./3rdparty/ade/ade-0.1.1f/sources/ade/source/alloc.cpp
+# cp $SCRIPTDIR/resources/alloc_fix.cpp ./3rdparty/ade/ade-0.1.1f/sources/ade/source/alloc.cpp
 
 # compiling with all power!
 echo "================================================================================"
 echo "Compiling with make -j"
 echo "================================================================================"
-make -j3
+make -j1
 
 ### installing in output directory ###
 echo "================================================================================"
