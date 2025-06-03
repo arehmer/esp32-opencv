@@ -118,15 +118,19 @@ CMAKE_ARGS="\
 
 
 ### configure and build opencv ###
-cd "$OPENCV_SOURCE_DIR"
-rm -rf build/ && mkdir -p build/ && cd build
+#cd "$OPENCV_SOURCE_DIR"
+#rm -rf build/ && mkdir -p build/ && cd build
+BUILD_DIR="${LIB_INSTALL_PATH}/opencv/build"
+rm -rf "$BUILD_DIR" && mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
 
 # configure with cmake
 echo "================================================================================"
 echo "Configuring with cmake ${CMAKE_ARGS} :"
 echo "================================================================================"
 # launch cmake with args and parse list of modules to be build in a variable
-OPENCV_MODULES_LIST=`cmake $CMAKE_ARGS .. | tee /dev/tty | grep 'To be built' | cut -f2 -d ':' | xargs | tr ' ' ','`
+#OPENCV_MODULES_LIST=`cmake $CMAKE_ARGS .. | tee /dev/tty | grep 'To be built' | cut -f2 -d ':' | xargs | tr ' ' ','`
+OPENCV_MODULES_LIST=$(cmake $CMAKE_ARGS "$OPENCV_SOURCE_DIR" | tee /dev/tty | grep 'To be built' | cut -f2 -d ':' | xargs | tr ' ' ',')
 echo $OPENCV_MODULES_LIST
 read -p "Don't forget to check the cmake summary! Continue ? [y/N]"  prompt
 if [ "${prompt}" != "y" ] && [ "${prompt}" != "Y" ] && [ "${prompt}" != "yes" ]; then 
