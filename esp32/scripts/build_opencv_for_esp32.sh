@@ -162,7 +162,12 @@ cp 3rdparty/lib/* $LIB_INSTALL_PATH/opencv/3rdparty
 # copying headers
 mkdir -p $LIB_INSTALL_PATH/opencv/opencv2
 cp opencv2/* $LIB_INSTALL_PATH/opencv/opencv2
-cp ../include/opencv2/opencv.hpp $LIB_INSTALL_PATH/opencv/opencv2/
+#cp ../include/opencv2/opencv.hpp $LIB_INSTALL_PATH/opencv/opencv2/
+if [ -f "$OPENCV_SOURCE_DIR/include/opencv2/opencv.hpp" ]; then
+    cp "$OPENCV_SOURCE_DIR/include/opencv2/opencv.hpp" "$LIB_INSTALL_PATH/opencv/opencv2/"
+else
+    echo "Warning: opencv.hpp not found at expected location."
+fi
 
 
 IFS=',' read -r -a modules <<< "$OPENCV_MODULES_LIST"
