@@ -130,8 +130,11 @@ echo "Configuring with cmake ${CMAKE_ARGS} :"
 echo "================================================================================"
 # launch cmake with args and parse list of modules to be build in a variable
 #OPENCV_MODULES_LIST=`cmake $CMAKE_ARGS .. | tee /dev/tty | grep 'To be built' | cut -f2 -d ':' | xargs | tr ' ' ','`
-OPENCV_MODULES_LIST=$(cmake $CMAKE_ARGS "$OPENCV_SOURCE_DIR" | tee /dev/tty | grep 'To be built' | cut -f2 -d ':' | xargs | tr ' ' ',')
-echo $OPENCV_MODULES_LIST
+#OPENCV_MODULES_LIST=$(cmake $CMAKE_ARGS "$OPENCV_SOURCE_DIR" | tee /dev/tty | grep 'To be built' | cut -f2 -d ':' | xargs | tr ' ' ',')
+#echo $OPENCV_MODULES_LIST
+cmake $CMAKE_ARGS "$OPENCV_SOURCE_DIR" | tee cmake_output.log
+grep 'To be built:' cmake_output.log
+
 read -p "Don't forget to check the cmake summary! Continue ? [y/N]"  prompt
 if [ "${prompt}" != "y" ] && [ "${prompt}" != "Y" ] && [ "${prompt}" != "yes" ]; then 
     echo "aborted."
