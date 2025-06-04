@@ -174,7 +174,8 @@ IFS=',' read -r -a modules <<< "$OPENCV_MODULES_LIST"
 for elt in "${modules[@]}"
 do
     echo "Module ${elt}"
-    cp -r "../modules/${elt}/include/opencv2" $LIB_INSTALL_PATH/opencv
+	cp -r "$OPENCV_SOURCE_DIR/modules/${elt}/include/opencv2" "$LIB_INSTALL_PATH/opencv"
+
 done
 
 echo "installation done."
